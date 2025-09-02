@@ -1,23 +1,26 @@
-export function calculatorSchema({ name, description, url }: { name: string; description: string; url: string; }) {
+export function calculatorSchema(args: { name: string; description: string; url: string }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name,
-    description,
-    applicationCategory: 'Calculator',
-    operatingSystem: 'Web',
-    url,
+    name: args.name,
+    description: args.description,
+    url: args.url,
+    applicationCategory: 'BusinessApplication',
   };
 }
 
-export function faqSchema(faq: { q: string; a: string }[]) {
+// ✅ aceitar ReadonlyArray e undefined/null
+export function faqSchema(
+  faq: ReadonlyArray<{ q: string; a: string }> | undefined | null
+) {
+  const list = Array.isArray(faq) ? Array.from(faq) : []; // copia sem mutar
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faq.map(({ q, a }) => ({
+    mainEntity: list.map(({ q, a }) => ({
       '@type': 'Question',
       name: q,
-      acceptedAnswer: { '@type': 'Answer', text: a }
-    }))
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
   };
 }
