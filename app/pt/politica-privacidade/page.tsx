@@ -12,14 +12,13 @@ export default function Page() {
       <h2>Que dados coletamos</h2>
       <ul>
         <li>
-          <strong>Dados inseridos nos formulários</strong> (ex.: datas, altura, peso) — processados no seu navegador,
-          sem envio ao servidor.
+          <strong>Dados inseridos nos formulários</strong> — processados no seu navegador, sem envio ao servidor.
         </li>
         <li>
           <strong>Cookies essenciais</strong> — necessários para o funcionamento do site.
         </li>
         <li>
-          <strong>Cookies opcionais</strong> (analytics e/ou publicidade) — ativados apenas com o seu consentimento.
+          <strong>Cookies opcionais</strong> (analytics/publicidade) — ativados apenas com o seu consentimento.
         </li>
       </ul>
 
@@ -32,7 +31,7 @@ export default function Page() {
       <h2>Partilha com terceiros</h2>
       <p>
         Podemos utilizar serviços de terceiros para medição de audiência e/ou exibição de anúncios, apenas conforme o
-        consentimento fornecido por você através do gestor de cookies (CMP).
+        consentimento fornecido no gestor de cookies (CMP).
       </p>
 
       <h2>Seus direitos</h2>
