@@ -112,6 +112,9 @@ function usePetCalcState() {
   const [weight, setWeight] = useState<string>(""); // opcional (kg)
   const [sex, setSex] = useState<string>("");
 
+  // controla quando exibir o resultado
+  const [calculated, setCalculated] = useState<boolean>(false);
+
   const breedOptions = BREEDS[species];
   const selectedBreed = useMemo(() => breedOptions.find((b) => b.name === breed), [breedOptions, breed]);
 
@@ -138,19 +141,27 @@ function usePetCalcState() {
     return base;
   }, [selectedBreed, species, sizeKey, weight]);
 
-  const remainingYears = Math.max(0, lifeExp - animalYears);
   const stage = lifeStage(species, humanYears);
 
+  function clearAll() {
+    setSpecies("dog");
+    setDob("");
+    setSize("medium");
+    setBreed("");
+    setWeight("");
+    setSex("");
+    setCalculated(false);
+  }
+
   return {
-    state: { species, dob, size, breed, weight, sex },
-    setters: { setSpecies, setDob, setSize, setBreed, setWeight, setSex },
+    state: { species, dob, size, breed, weight, sex, calculated },
+    setters: { setSpecies, setDob, setSize, setBreed, setWeight, setSex, setCalculated, clearAll },
     derived: {
       breedOptions,
       selectedBreed,
       animalYears,
       humanYears,
       lifeExp,
-      remainingYears,
       stage,
       sizeKey,
     },
@@ -178,7 +189,7 @@ export default function PetCalculator({ faq }: { faq: readonly { q: string; a: s
         heroEmoji="🐾"
         form={<Form />}
         result={<Result />}
-        faq={<Faq items={faq} />}
+        faq={<FaqToggle items={faq} />}
       />
     </PetCalcProvider>
   );
@@ -188,7 +199,7 @@ export default function PetCalculator({ faq }: { faq: readonly { q: string; a: s
 function Form() {
   const {
     state: { species, dob, size, breed, weight, sex },
-    setters: { setSpecies, setDob, setSize, setBreed, setWeight, setSex },
+    setters: { setSpecies, setDob, setSize, setBreed, setWeight, setSex, setCalculated, clearAll },
     derived: { breedOptions },
   } = usePetCalc();
 
@@ -201,7 +212,8 @@ function Form() {
           value={species}
           onChange={(e) => {
             setSpecies(e.target.value as Species);
-            setBreed(""); // reset breed quando muda espécie
+            setBreed("");
+            setCalculated(false);
           }}
         >
           <option value="dog">Cão</option>
@@ -216,7 +228,10 @@ function Form() {
           className="w-full border rounded-lg p-2"
           value={dob}
           max={new Date().toISOString().slice(0, 10)}
-          onChange={(e) => setDob(e.target.value)}
+          onChange={(e) => {
+            setDob(e.target.value);
+            setCalculated(false);
+          }}
         />
       </label>
 
@@ -225,7 +240,10 @@ function Form() {
         <select
           className="w-full border rounded-lg p-2"
           value={size}
-          onChange={(e) => setSize(e.target.value as SizeKey)}
+          onChange={(e) => {
+            setSize(e.target.value as SizeKey);
+            setCalculated(false);
+          }}
         >
           <option value="small">Pequeno</option>
           <option value="medium">Médio</option>
@@ -239,7 +257,10 @@ function Form() {
           list="breedList"
           className="w-full border rounded-lg p-2"
           value={breed}
-          onChange={(e) => setBreed(e.target.value)}
+          onChange={(e) => {
+            setBreed(e.target.value);
+            setCalculated(false);
+          }}
           placeholder={species === "dog" ? "Ex.: Labrador" : "Ex.: Siamês"}
         />
         <datalist id="breedList">
@@ -258,30 +279,65 @@ function Form() {
           step={0.1}
           className="w-full border rounded-lg p-2"
           value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+          onChange={(e) => {
+            setWeight(e.target.value);
+            setCalculated(false);
+          }}
           placeholder="Ex.: 12.5"
         />
       </label>
 
       <label className="text-sm">
         <span className="block mb-1">Sexo (opcional)</span>
-        <select className="w-full border rounded-lg p-2" value={sex} onChange={(e) => setSex(e.target.value)}>
+        <select
+          className="w-full border rounded-lg p-2"
+          value={sex}
+          onChange={(e) => {
+            setSex(e.target.value);
+            setCalculated(false);
+          }}
+        >
           <option value="">Prefiro não dizer</option>
           <option value="female">Fêmea</option>
           <option value="male">Macho</option>
         </select>
       </label>
+
+      {/* Botões de ação */}
+      <div className="md:col-span-2 flex flex-wrap gap-3 pt-2">
+        <button
+          type="button"
+          className="px-4 py-2 rounded-lg bg-gray-900 text-white"
+          onClick={() => setCalculated(true)}
+          aria-label="Calcular idade do pet"
+        >
+          Calcular
+        </button>
+        <button
+          type="button"
+          className="px-4 py-2 rounded-lg border"
+          onClick={clearAll}
+          aria-label="Limpar campos"
+        >
+          Limpar
+        </button>
+      </div>
     </form>
   );
 }
 
 function Result() {
   const {
-    state: { dob },
-    derived: { animalYears, humanYears, lifeExp, remainingYears, stage, selectedBreed, sizeKey },
+    state: { dob, calculated, species },
+    derived: { animalYears, humanYears, lifeExp, selectedBreed, sizeKey, stage },
   } = usePetCalc();
 
-  if (!dob) return <div className="text-sm text-gray-600">Preencha a data de nascimento para calcular.</div>;
+  if (!calculated) {
+    return <div className="text-sm text-gray-600">Preencha os dados e clique em <b>Calcular</b> para ver o resultado.</div>;
+  }
+  if (!dob) {
+    return <div className="text-sm text-red-600">Informe a <b>data de nascimento</b> para calcular.</div>;
+  }
 
   return (
     <div className="space-y-2 text-sm">
@@ -299,9 +355,14 @@ function Result() {
       <Info
         title="Expectativa de vida"
         value={`${lifeExp.toFixed(1)} anos`}
-        hint={selectedBreed ? `Baseado na raça: ${selectedBreed.name}` : "Estimativa por porte/espécie."}
+        hint={
+          selectedBreed
+            ? `Baseado na raça: ${selectedBreed.name}`
+            : species === "dog"
+            ? "Estimativa por porte (cães)."
+            : "Estimativa média (gatos)."
+        }
       />
-      <Info title="Anos restantes (estim.)" value={`${round1(remainingYears)} anos`} />
       <p className="text-xs text-gray-500 mt-3">
         As estimativas são aproximadas e podem variar conforme genética, ambiente, nutrição e cuidados veterinários.
         Consulte o seu veterinário.
@@ -322,15 +383,33 @@ function Info({ title, value, hint }: { title: string; value: string; hint?: str
   );
 }
 
-function Faq({ items }: { items: readonly { q: string; a: string }[] }) {
+// ---------- FAQ toggle ----------
+function FaqToggle({ items }: { items: readonly { q: string; a: string }[] }) {
+  const [open, setOpen] = useState<number | null>(null);
   return (
-    <ul className="text-sm text-gray-700 space-y-2">
-      {items.map((it) => (
-        <li key={it.q}>
-          <p className="font-medium">{it.q}</p>
-          <p className="text-gray-600">{it.a}</p>
-        </li>
-      ))}
+    <ul className="text-sm text-gray-700 divide-y rounded-xl border">
+      {items.map((it, idx) => {
+        const isOpen = open === idx;
+        return (
+          <li key={it.q}>
+            <button
+              type="button"
+              onClick={() => setOpen(isOpen ? null : idx)}
+              className="w-full text-left flex items-center justify-between gap-3 p-3 hover:bg-gray-50"
+              aria-expanded={isOpen}
+              aria-controls={`faq-${idx}`}
+            >
+              <span className="font-medium">{it.q}</span>
+              <span aria-hidden>{isOpen ? "–" : "+"}</span>
+            </button>
+            {isOpen && (
+              <div id={`faq-${idx}`} className="p-3 pt-0 text-gray-600">
+                {it.a}
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }
