@@ -1,6 +1,9 @@
-export const metadata = { title: "Política de Cookies" };
+import React from "react";
+import type { Metadata } from "next";
 
-export default function Page() {
+export const metadata: Metadata = { title: "Política de Cookies" };
+
+export default function Page(): JSX.Element {
   return (
     <main className="prose prose-indigo max-w-3xl mx-auto p-6">
       <h1>Política de Cookies</h1>
