@@ -1,6 +1,9 @@
-export const metadata = { title: "Política de Privacidade" };
+import React from "react";
+import type { Metadata } from "next";
 
-export default function Page() {
+export const metadata: Metadata = { title: "Política de Privacidade" };
+
+export default function Page(): JSX.Element {
   return (
     <main className="prose prose-indigo max-w-3xl mx-auto p-6">
       <h1>Política de Privacidade</h1>
@@ -12,14 +15,13 @@ export default function Page() {
       <h2>Que dados coletamos</h2>
       <ul>
         <li>
-          <strong>Dados inseridos nos formulários</strong> (ex.: datas, altura, peso) — processados no seu navegador,
-          sem envio ao servidor.
+          <strong>Dados inseridos nos formulários</strong> — processados no seu navegador, sem envio ao servidor.
         </li>
         <li>
           <strong>Cookies essenciais</strong> — necessários para o funcionamento do site.
         </li>
         <li>
-          <strong>Cookies opcionais</strong> (analytics e/ou publicidade) — ativados apenas com o seu consentimento.
+          <strong>Cookies opcionais</strong> (analytics/publicidade) — ativados apenas com o seu consentimento.
         </li>
       </ul>
 
@@ -32,7 +34,7 @@ export default function Page() {
       <h2>Partilha com terceiros</h2>
       <p>
         Podemos utilizar serviços de terceiros para medição de audiência e/ou exibição de anúncios, apenas conforme o
-        consentimento fornecido por você através do gestor de cookies (CMP).
+        consentimento fornecido no gestor de cookies (CMP).
       </p>
 
       <h2>Seus direitos</h2>
@@ -42,7 +44,7 @@ export default function Page() {
       </p>
 
       <h2>Contacto</h2>
-      <p>Envie-nos um e-mail (substitua aqui pelo seu contacto oficial).</p>
+      <p></p>
     </main>
   );
 }
