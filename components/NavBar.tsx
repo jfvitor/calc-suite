@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const LINKS = [
     { href: "/pt/idade-pets", label: "Idade de Pets" },
     { href: "/pt/imc", label: "IMC" },
-    { href: "/pt/gravidez", label: "Gravidez" }, // <- se sua pasta for /pt/gravidez-ovulacao, troque aqui
+    { href: "/pt/gravidez", label: "Gravidez" }, 
 ];
 
 export default function NavBar() {
@@ -16,7 +16,7 @@ export default function NavBar() {
         <nav className="sticky top-0 z-40 text-white shadow-md">
             <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-                    <Link href="/pt" className="text-base font-bold tracking-tight hover:opacity-90">
+                    <Link href="/" className="text-base font-bold tracking-tight hover:opacity-90">
                         CalcSuite
                     </Link>
                     <div className="flex gap-2 sm:gap-4 text-sm font-medium">

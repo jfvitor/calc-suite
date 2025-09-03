@@ -44,7 +44,7 @@ export default function Page(): JSX.Element {
       </p>
 
       <h2>Contacto</h2>
-      <p>Envie-nos um e-mail (substitua aqui pelo seu contacto oficial).</p>
+      <p></p>
     </main>
   );
 }
