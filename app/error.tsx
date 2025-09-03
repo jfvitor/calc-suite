@@ -1,0 +1,1 @@
+"use client"; export default function Error() { return <main className="p-10 text-center">Ocorreu um erro.</main>; }

@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+:root {
+    color-scheme: light;
+}
 
 /* Reserva de altura p/ Ads (evita CLS) */
-.ad-reserved { min-height: 280px; }
+.ad-reserved {
+    min-height: 280px;
+}
