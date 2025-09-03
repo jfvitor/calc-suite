@@ -9,9 +9,21 @@ import SiteFooter from "@/components/SiteFooter";
 export const metadata: Metadata = {
   title: "CalcSuite — Calculadoras",
   description:
-    "Calculadoras simples (Idade de Pets, IMC, Gravidez/Ovulação) — prontas para AdSense e conformes GDPR/LGPD.",
+    "Calculadoras simples (Idade Humana de Pets, IMC, Gravidez/Ovulação) — prontas para AdSense e conformes GDPR/LGPD.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+
+  // 🔑 base usada para gerar canonical URLs automáticas
+  metadataBase: new URL("https://suitecalculo.com"),
+
+  // 🔑 hreflang alternates para SEO multilíngue
+  alternates: {
+    languages: {
+      "pt": "/pt",   
+      "en": "/en",  
+    },
+  },
 };
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
