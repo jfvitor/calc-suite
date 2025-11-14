@@ -109,7 +109,8 @@ function usePetCalcState() {
   const [dob, setDob] = useState<string>("");
   const [sex, setSex] = useState<Sex>("female");
   const [weight, setWeight] = useState<string>("");
-  const [breedName, setBreedName] = useState<string>("Mixed Breed");
+  // usamos o valor interno em PT, pois é assim que está definido em lib/breeds.ts
+  const [breedName, setBreedName] = useState<string>("Sem raça definida (SRD)");
   const [size, setSize] = useState<SizeKey>("auto");
   const [showResult, setShowResult] = useState<boolean>(false);
 
@@ -188,7 +189,7 @@ export default function PetCalculator({
         result={<Result />}
         faq={<FaqToggle items={faq} />}
         compact
-        labels={labels}   // <<< AGORA FUNCIONA
+        labels={labels}
       />
     </PetCalcProvider>
   );
@@ -215,7 +216,7 @@ function Form() {
     setDob("");
     setSex("female");
     setWeight("");
-    setBreedName("Mixed Breed");
+    setBreedName("Sem raça definida (SRD)");
     setSize("auto");
     setShowResult(false);
   }
@@ -237,7 +238,7 @@ function Form() {
           value={species}
           onChange={(e) => {
             setSpecies(e.target.value as Species);
-            setBreedName("Mixed Breed");
+            setBreedName("Sem raça definida (SRD)");
             setShowResult(false);
           }}
         >
@@ -272,11 +273,18 @@ function Form() {
             setShowResult(false);
           }}
         >
-          {breeds.map((b) => (
-            <option key={b.name} value={b.name}>
-              {b.name}
-            </option>
-          ))}
+          {breeds.map((b) => {
+            const displayName =
+              b.name === "Sem raça definida (SRD)"
+                ? "Mixed breed (no defined breed)"
+                : b.name;
+
+            return (
+              <option key={b.name} value={b.name}>
+                {displayName}
+              </option>
+            );
+          })}
         </select>
         <p className="mt-1 text-xs text-gray-500">
           Breed helps infer size automatically.
