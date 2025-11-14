@@ -23,7 +23,16 @@ export default function Page() {
         })}
       />
       <JsonLd json={faqSchema(faq)} />
-      <PetCalculator faq={faq} />
+
+      {/* Passando labels EN para dentro do PetCalculator */}
+      <PetCalculator
+        faq={faq}
+        labels={{
+          dataTitle: "Inputs",
+          resultTitle: "Result",
+          faqTitle: "FAQ"
+        }}
+      />
     </>
   );
 }
