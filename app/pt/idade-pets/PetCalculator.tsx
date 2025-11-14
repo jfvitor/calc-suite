@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
 import CalculatorShell from "@/components/CalculatorShell";
 import type { Species as SpeciesT } from "@/lib/breeds";
-import { getBreeds, dogBreeds, catBreeds, type Breed, type SizeKey as SizeKeyT } from "@/lib/breeds";
+import { getBreeds, type Breed, type SizeKey as SizeKeyT } from "@/lib/breeds";
 
 // ---------- tipos ----------
 type Species = SpeciesT;
@@ -20,28 +20,51 @@ function yearsBetween(dateStr: string | undefined): number {
   const years = diff / (1000 * 60 * 60 * 24 * 365.2425);
   return Math.max(0, years);
 }
+
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
-// Fórmula base (igual à versão anterior)
-function toHumanYears(species: Species, sizeKey: Exclude<SizeKey, "auto">, animalYears: number): number {
+// Conversão para idade humana
+function toHumanYears(
+  species: Species,
+  sizeKey: Exclude<SizeKey, "auto">,
+  animalYears: number
+): number {
   if (animalYears <= 0) return 0;
 
   if (species === "dog") {
-    const firstYear: Record<Exclude<SizeKey, "auto">, number> = { small: 12.5, medium: 12.5, large: 10.5 };
+    const firstYear: Record<Exclude<SizeKey, "auto">, number> = {
+      small: 12.5,
+      medium: 12.5,
+      large: 10.5,
+    };
     const secondYear = firstYear;
-    const postRate: Record<Exclude<SizeKey, "auto">, number> = { small: 4.3, medium: 4.0, large: 5.7 };
+    const postRate: Record<Exclude<SizeKey, "auto">, number> = {
+      small: 4.3,
+      medium: 4.0,
+      large: 5.7,
+    };
+
     if (animalYears <= 1) return animalYears * firstYear[sizeKey];
-    if (animalYears <= 2) return firstYear[sizeKey] + (animalYears - 1) * secondYear[sizeKey];
-    return firstYear[sizeKey] + secondYear[sizeKey] + (animalYears - 2) * postRate[sizeKey];
+    if (animalYears <= 2)
+      return firstYear[sizeKey] + (animalYears - 1) * secondYear[sizeKey];
+
+    return (
+      firstYear[sizeKey] +
+      secondYear[sizeKey] +
+      (animalYears - 2) * postRate[sizeKey]
+    );
   }
 
-  // gatos
+  // Gatos
   if (animalYears <= 1) return animalYears * 15;
   if (animalYears <= 2) return 15 + (animalYears - 1) * 9;
   return 24 + (animalYears - 2) * 4;
 }
 
-function lifeStage(species: Species, humanYears: number): "Filhote" | "Jovem" | "Adulto" | "Sénior" {
+function lifeStage(
+  species: Species,
+  humanYears: number
+): "Filhote" | "Jovem" | "Adulto" | "Sénior" {
   const h = humanYears;
   if (species === "dog") {
     if (h < 12) return "Filhote";
@@ -56,12 +79,14 @@ function lifeStage(species: Species, humanYears: number): "Filhote" | "Jovem" | 
   }
 }
 
-// Inferência de porte quando usuário deixa em “Automático”
-function inferSize(species: Species, breed: Breed | null, weightKg: number | null): Exclude<SizeKey, "auto"> {
-  // 1) se a raça tiver porte, usar
+// Porte automático
+function inferSize(
+  species: Species,
+  breed: Breed | null,
+  weightKg: number | null
+): Exclude<SizeKey, "auto"> {
   if (breed) return breed.size;
 
-  // 2) fallback por peso (limiares simples e práticos)
   if (species === "dog") {
     if (weightKg !== null) {
       if (weightKg < 10) return "small";
@@ -70,11 +95,10 @@ function inferSize(species: Species, breed: Breed | null, weightKg: number | nul
     }
     return "medium";
   } else {
-    // cat
     if (weightKg !== null) {
       if (weightKg < 4) return "small";
       if (weightKg <= 6) return "medium";
-      return "large"; // raças grandes como Maine Coon
+      return "large";
     }
     return "medium";
   }
@@ -85,9 +109,9 @@ function usePetCalcState() {
   const [species, setSpecies] = useState<Species>("dog");
   const [dob, setDob] = useState<string>("");
   const [sex, setSex] = useState<Sex>("femea");
-  const [weight, setWeight] = useState<string>(""); // opcional
+  const [weight, setWeight] = useState<string>("");
   const [breedName, setBreedName] = useState<string>("Sem raça definida (SRD)");
-  const [size, setSize] = useState<SizeKey>("auto"); // inclui "auto"
+  const [size, setSize] = useState<SizeKey>("auto");
   const [showResult, setShowResult] = useState<boolean>(false);
 
   const breeds = useMemo(() => getBreeds(species), [species]);
@@ -111,16 +135,36 @@ function usePetCalcState() {
 
   return {
     state: { species, dob, sex, weight, breedName, size, showResult },
-    setters: { setSpecies, setDob, setSex, setWeight, setBreedName, setSize, setShowResult },
-    derived: { animalYears, humanYears, stage, breeds, breedObj, effectiveSize, weightNum },
+    setters: {
+      setSpecies,
+      setDob,
+      setSex,
+      setWeight,
+      setBreedName,
+      setSize,
+      setShowResult,
+    },
+    derived: {
+      animalYears,
+      humanYears,
+      stage,
+      breeds,
+      breedObj,
+      effectiveSize,
+      weightNum,
+    },
   } as const;
 }
 
-const PetCalcCtx = createContext<ReturnType<typeof usePetCalcState> | null>(null);
+const PetCalcCtx = createContext<ReturnType<typeof usePetCalcState> | null>(
+  null
+);
+
 function PetCalcProvider({ children }: { children: React.ReactNode }) {
   const value = usePetCalcState();
   return <PetCalcCtx.Provider value={value}>{children}</PetCalcCtx.Provider>;
 }
+
 function usePetCalc() {
   const ctx = useContext(PetCalcCtx);
   if (!ctx) throw new Error("PetCalcCtx não encontrado");
@@ -128,17 +172,21 @@ function usePetCalc() {
 }
 
 // ---------- componente exportado ----------
-export default function PetCalculator({ faq }: { faq: readonly { q: string; a: string }[] }) {
+export default function PetCalculator({
+  faq,
+}: {
+  faq: readonly { q: string; a: string }[];
+}) {
   return (
     <PetCalcProvider>
       <CalculatorShell
-        title="Idade de Pets (Cão/Gato)"
+        title="Calculadora de Idade de Pets (Cão/Gato)"
         subtitle="Informe os dados do seu animal para estimar a idade humana equivalente."
         heroEmoji="🐾"
         form={<Form />}
         result={<Result />}
         faq={<FaqToggle items={faq} />}
-        compact // sem espaço de ads por enquanto
+        compact
       />
     </PetCalcProvider>
   );
@@ -148,7 +196,15 @@ export default function PetCalculator({ faq }: { faq: readonly { q: string; a: s
 function Form() {
   const {
     state: { species, dob, sex, weight, breedName, size },
-    setters: { setSpecies, setDob, setSex, setWeight, setBreedName, setSize, setShowResult },
+    setters: {
+      setSpecies,
+      setDob,
+      setSex,
+      setWeight,
+      setBreedName,
+      setSize,
+      setShowResult,
+    },
     derived: { breeds },
   } = usePetCalc();
 
@@ -161,12 +217,16 @@ function Form() {
     setSize("auto");
     setShowResult(false);
   }
+
   function handleCalc() {
     setShowResult(true);
   }
 
   return (
-    <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={(e) => e.preventDefault()}>
+    <form
+      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      onSubmit={(e) => e.preventDefault()}
+    >
       {/* Espécie */}
       <label className="text-sm">
         <span className="block mb-1">Espécie</span>
@@ -199,7 +259,7 @@ function Form() {
         />
       </label>
 
-      {/* Raça (filtra por espécie) */}
+      {/* Raça */}
       <label className="text-sm">
         <span className="block mb-1">Raça</span>
         <select
@@ -217,11 +277,11 @@ function Form() {
           ))}
         </select>
         <p className="mt-1 text-xs text-gray-500">
-          A raça ajuda a inferir o porte automaticamente. Você pode ajustar manualmente abaixo.
+          A raça ajuda a inferir o porte automaticamente.
         </p>
       </label>
 
-      {/* Sexo (opcional) */}
+      {/* Sexo */}
       <label className="text-sm">
         <span className="block mb-1">Sexo (opcional)</span>
         <select
@@ -237,7 +297,7 @@ function Form() {
         </select>
       </label>
 
-      {/* Peso (opcional) */}
+      {/* Peso */}
       <label className="text-sm">
         <span className="block mb-1">Peso (kg, opcional)</span>
         <input
@@ -254,7 +314,7 @@ function Form() {
         />
       </label>
 
-      {/* Porte (com Automático) */}
+      {/* Porte */}
       <label className="text-sm">
         <span className="block mb-1">Porte</span>
         <select
@@ -274,10 +334,18 @@ function Form() {
 
       {/* Ações */}
       <div className="col-span-1 md:col-span-2 flex gap-4 mt-2">
-        <button type="button" onClick={handleCalc} className="px-4 py-2 bg-green-600 text-white rounded-lg">
+        <button
+          type="button"
+          onClick={handleCalc}
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+        >
           Calcular
         </button>
-        <button type="button" onClick={handleClear} className="px-4 py-2 bg-gray-300 rounded-lg">
+        <button
+          type="button"
+          onClick={handleClear}
+          className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+        >
           Limpar
         </button>
       </div>
@@ -292,41 +360,58 @@ function Result() {
   } = usePetCalc();
 
   if (!showResult) {
-    return <div className="text-sm text-gray-600">Preencha os campos e clique em <b>Calcular</b>.</div>;
+    return (
+      <div className="text-sm text-gray-600">
+        Preencha os campos e clique em <b>Calcular</b> para ver o resultado.
+      </div>
+    );
   }
+
   if (!dob) {
-    return <div className="text-sm text-red-600">Informe a <b>data de nascimento</b>.</div>;
+    return (
+      <div className="text-sm text-red-600">
+        Informe a <b>data de nascimento</b> do seu pet.
+      </div>
+    );
+  }
+
+  if (animalYears <= 0) {
+    return (
+      <div className="text-sm text-red-600">
+        A data informada é igual a hoje ou está no futuro. Verifique e tente
+        novamente.
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-2 text-sm">
+    <div className="space-y-3 text-sm border rounded-xl p-4 bg-gray-50">
       <Info title="Idade do animal" value={`${round1(animalYears)} anos`} />
       <Info title="Idade humana (estimada)" value={`${round1(humanYears)} anos`} />
       <Info title="Fase da vida" value={stage} />
 
       <p className="text-xs text-gray-500 mt-3">
-        As estimativas são aproximadas. Genética, ambiente e cuidados veterinários podem alterar a idade “humana”
-        equivalente. Consulte o seu veterinário.
+        As estimativas são aproximadas. Fatores como genética, saúde,
+        alimentação e ambiente podem alterar estes valores. Consulte sempre o
+        veterinário para avaliações precisas.
       </p>
     </div>
   );
 }
 
-
 function Info({ title, value }: { title: string; value: string }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2">
+    <div className="flex items-start justify-between gap-4 py-1">
       <div className="text-gray-700">{title}</div>
-      <div className="text-right">
-        <div className="font-semibold">{value}</div>
-      </div>
+      <div className="text-right font-semibold">{value}</div>
     </div>
   );
 }
 
-// ---------- FAQ (toggle) ----------
+// ---------- FAQ ----------
 function FaqToggle({ items }: { items: readonly { q: string; a: string }[] }) {
   const [open, setOpen] = useState<number | null>(null);
+
   return (
     <ul className="text-sm text-gray-700 divide-y rounded-xl border">
       {items.map((it, idx) => {
@@ -343,6 +428,7 @@ function FaqToggle({ items }: { items: readonly { q: string; a: string }[] }) {
               <span className="font-medium">{it.q}</span>
               <span aria-hidden>{isOpen ? "–" : "+"}</span>
             </button>
+
             {isOpen && (
               <div id={`faq-${idx}`} className="p-3 pt-0 text-gray-600">
                 {it.a}
