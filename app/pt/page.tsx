@@ -37,7 +37,15 @@ export default function Home() {
           >
             <div>
               <div className="flex items-center gap-3">
-                <img src={c.icon} alt="" className="w-8 h-auto object-contain" />
+                {/* Ícone corrigido */}
+                <div className="w-8 h-8 flex items-center justify-center">
+                  <img
+                    src={c.icon}
+                    alt=""
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+
                 <h2 className="text-lg font-semibold group-hover:underline">{c.title}</h2>
               </div>
               <p className="text-sm text-gray-600 mt-2">{c.desc}</p>
