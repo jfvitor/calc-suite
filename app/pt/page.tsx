@@ -37,7 +37,7 @@ export default function Home() {
           >
             <div>
               <div className="flex items-center gap-3">
-                <img src={c.icon} alt="" className="w-8 h-8" />
+                <img src={c.icon} alt="" className="w-8 h-auto object-contain" />
                 <h2 className="text-lg font-semibold group-hover:underline">{c.title}</h2>
               </div>
               <p className="text-sm text-gray-600 mt-2">{c.desc}</p>
