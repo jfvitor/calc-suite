@@ -16,6 +16,18 @@ type Labels = {
   faqTitle?: string;
 };
 
+// Map of internal PT breed names -> EN display labels
+const BREED_LABELS_EN: Record<string, string> = {
+  "Sem raça definida (SRD)": "Mixed breed (no defined breed)",
+  "Pastor Alemão": "German Shepherd",
+  "Bulldog Francês": "French Bulldog",
+  "Poodle (Médio)": "Poodle (Medium)",
+  "Poodle (Toy/Mini)": "Poodle (Toy/Mini)",
+  "Dachshund (Teckel)": "Dachshund (Teckel)",
+  "Siamês": "Siamese",
+  "Persa": "Persian",
+};
+
 // ---------- utils ----------
 function yearsBetween(dateStr: string | undefined): number {
   if (!dateStr) return 0;
@@ -274,10 +286,7 @@ function Form() {
           }}
         >
           {breeds.map((b) => {
-            const displayName =
-              b.name === "Sem raça definida (SRD)"
-                ? "Mixed breed (no defined breed)"
-                : b.name;
+            const displayName = BREED_LABELS_EN[b.name] ?? b.name;
 
             return (
               <option key={b.name} value={b.name}>
