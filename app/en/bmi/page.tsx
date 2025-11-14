@@ -23,7 +23,15 @@ export default function Page() {
         })}
       />
       <JsonLd json={faqSchema(faq)} />
-      <ImcCalculator faq={faq} />
+
+      <ImcCalculator
+        faq={faq}
+        labels={{
+          dataTitle: "Inputs",
+          resultTitle: "Result",
+          faqTitle: "FAQ",
+        }}
+      />
     </>
   );
 }
