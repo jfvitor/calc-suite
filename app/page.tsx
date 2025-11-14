@@ -1,8 +1,7 @@
 export default function Home() {
   const cards = [
     { href: '/pt/idade-pets', title: 'Idade de Pets', desc: 'Calcule idade humana do seu cão/gato.', icon: '/icons/paw.svg' },
-    { href: '/pt/imc', title: 'IMC', desc: 'Índice de Massa Corporal, metas e TDEE (breve).', icon: '/icons/bmi.svg' },
-    { href: '/pt/gravidez-ovulacao', title: 'Gravidez', desc: 'Data provável do parto e janela fértil.', icon: '/icons/pregnancy.svg' }
+    { href: '/pt/imc', title: 'IMC', desc: 'Índice de Massa Corporal, metas e TDEE (breve).', icon: '/icons/bmi.svg' }
   ];
   return (
     <div className="grid md:grid-cols-3 gap-4 md:gap-6">
