@@ -3,33 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Mapeamento PT <-> EN
-// A chave é o slug SEM o /pt ou /en
-const routeMap: Record<
-  string,
-  { pt: string; en: string }
-> = {
-  "": { pt: "/pt", en: "/en" },
-  "/idade-pets": { pt: "/pt/idade-pets", en: "/en/pet-age" },
-  "/imc": { pt: "/pt/imc", en: "/en/bmi" },
-  // Adicione mais rotas aqui conforme necessário
-  // "/gravidez-ovulacao": { pt: "/pt/gravidez-ovulacao", en: "/en/pregnancy" },
-};
+// Lista de rotas equivalentes PT <-> EN
+const routes: { pt: string; en: string }[] = [
+  { pt: "/pt", en: "/en" },
+  { pt: "/pt/idade-pets", en: "/en/pet-age" },
+  { pt: "/pt/imc", en: "/en/bmi" },
+  // Se adicionar novas páginas, é só colocar aqui:
+  // { pt: "/pt/alguma-coisa", en: "/en/some-page" },
+];
 
 export default function LocaleSwitcher() {
   const pathname = usePathname() || "/pt";
 
-  // Detect locale atual
   const isPT = pathname.startsWith("/pt");
   const isEN = pathname.startsWith("/en");
 
-  // Remove o prefixo do locale para achar no mapa
-  const slug = pathname.replace(/^\/(pt|en)/, "") || "";
+  // Descobre qual par de rotas corresponde à página atual
+  const current =
+    routes.find((r) => r.pt === pathname || r.en === pathname) ?? routes[0];
 
-  const entry = routeMap[slug] ?? routeMap[""];
-
-  const ptHref = entry.pt;
-  const enHref = entry.en;
+  const ptHref = current.pt;
+  const enHref = current.en;
 
   return (
     <div className="text-xs flex gap-2">
