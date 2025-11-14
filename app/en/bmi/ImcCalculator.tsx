@@ -3,6 +3,13 @@
 import React, { createContext, useContext, useState } from "react";
 import CalculatorShell from "@/components/CalculatorShell";
 
+// ---------- types ----------
+type Labels = {
+  dataTitle?: string;
+  resultTitle?: string;
+  faqTitle?: string;
+};
+
 // ---------- utils ----------
 function toNumberLocale(str: string): number {
   // Accepts "1.75" and "1,75"
@@ -82,8 +89,10 @@ function useBmiCalc() {
 // ---------- exported component ----------
 export default function ImcCalculator({
   faq,
+  labels,
 }: {
   faq: readonly { q: string; a: string }[];
+  labels?: Labels;
 }) {
   return (
     <BmiCalcProvider>
@@ -95,6 +104,7 @@ export default function ImcCalculator({
         result={<Result />}
         faq={<FaqToggle items={faq} />}
         compact // no ad layout for now
+        labels={labels}
       />
     </BmiCalcProvider>
   );
