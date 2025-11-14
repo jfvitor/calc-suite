@@ -7,13 +7,11 @@ import LocaleSwitcher from "@/components/LocaleSwitcher";
 const LINKS_PT = [
   { href: "/pt/idade-pets", label: "Idade de Pets" },
   { href: "/pt/imc", label: "IMC" },
-  { href: "/pt/gravidez-ovulacao", label: "Gravidez" }, 
 ];
 
 const LINKS_EN = [
   { href: "/en/pet-age", label: "Pet Age" },
   { href: "/en/bmi", label: "BMI" },
-  { href: "/en/pregnancy", label: "Pregnancy" },
 ];
 
 export default function NavBar() {
