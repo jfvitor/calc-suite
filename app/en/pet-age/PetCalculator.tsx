@@ -10,6 +10,12 @@ type Species = SpeciesT;
 type SizeKey = SizeKeyT | "auto";
 type Sex = "male" | "female";
 
+type Labels = {
+  dataTitle?: string;
+  resultTitle?: string;
+  faqTitle?: string;
+};
+
 // ---------- utils ----------
 function yearsBetween(dateStr: string | undefined): number {
   if (!dateStr) return 0;
@@ -32,17 +38,9 @@ function toHumanYears(
   if (animalYears <= 0) return 0;
 
   if (species === "dog") {
-    const firstYear: Record<Exclude<SizeKey, "auto">, number> = {
-      small: 12.5,
-      medium: 12.5,
-      large: 10.5,
-    };
+    const firstYear = { small: 12.5, medium: 12.5, large: 10.5 };
     const secondYear = firstYear;
-    const postRate: Record<Exclude<SizeKey, "auto">, number> = {
-      small: 4.3,
-      medium: 4.0,
-      large: 5.7,
-    };
+    const postRate = { small: 4.3, medium: 4.0, large: 5.7 };
 
     if (animalYears <= 1) return animalYears * firstYear[sizeKey];
     if (animalYears <= 2)
@@ -175,8 +173,10 @@ function usePetCalc() {
 // ---------- exported component ----------
 export default function PetCalculator({
   faq,
+  labels,
 }: {
   faq: readonly { q: string; a: string }[];
+  labels?: Labels;
 }) {
   return (
     <PetCalcProvider>
@@ -188,6 +188,7 @@ export default function PetCalculator({
         result={<Result />}
         faq={<FaqToggle items={faq} />}
         compact
+        labels={labels}   // <<< AGORA FUNCIONA
       />
     </PetCalcProvider>
   );
